@@ -24,10 +24,10 @@ export default function TopNav({ onToggleSidebar }) {
 
       {/* CENTER (Desktop search) */}
       <div className="hidden md:flex flex-1 justify-center px-6">
-        <div className="flex items-center bg-gray-900 rounded-full px-4 h-11 w-full max-w-xl">
+        <div className="flex items-center border-gray-700 border rounded-full px-4 h-11 w-full max-w-xl">
           <input
             className="flex-1 bg-transparent text-white outline-none"
-            placeholder="Search"
+            placeholder="Search...."
           />
           <FaSearch className="text-white" />
         </div>
