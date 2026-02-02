@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-// import { 
-//   Search, 
-//   Plus, 
-//   MoreVertical, 
-//   Video, 
-//   Paperclip, 
-//   Smile, 
-//   SendHorizontal, 
-//   Circle 
-// } from 'lucide-react';
+import { 
+  Search, 
+  Plus, 
+  MoreVertical, 
+  Video, 
+  Paperclip, 
+  Smile, 
+  SendHorizontal, 
+  Circle 
+} from 'lucide-react';
 
 const Chat = () => {
   const [searchTerm, setSearchTerm] = useState('');

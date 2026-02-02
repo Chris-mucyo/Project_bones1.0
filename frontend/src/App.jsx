@@ -4,7 +4,11 @@ import SignIn from "./pages/signin.jsx";
 import SignUp from "./pages/signup.jsx";
 import Home from "./pages/home.jsx";
 import Chat from "./pages/chart.jsx";
+import Features from "./pages/sellers/features.jsx"
+import HowItWorks from "./pages/sellers/howItWorks.jsx"
+import Pricing from "./pages/sellers/pricing.jsx"
 import MarketSpace from "./pages/sellers/Space.jsx";
+import Profile from "./pages/sellers/profile.jsx";
 
 export default function App() {
   return (
@@ -19,6 +23,10 @@ export default function App() {
       </Routes>
       <Routes>
         <Route path="/sellers/space" element={<MarketSpace />} />
+        <Route path="/sellers/space/pricing" element={<Pricing />} />
+        <Route path="/sellers/space/features" element={<Features />} />
+        <Route path="/sellers/space/how-it-works" element={<HowItWorks />} />
+        <Route path="/sellers/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );
