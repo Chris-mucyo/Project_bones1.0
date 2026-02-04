@@ -2,8 +2,20 @@ import { useState } from "react";
 import { FaBars, FaSearch } from "react-icons/fa";
 import { IoIosNotifications, IoIosCart } from "react-icons/io";
 
-export default function TopNav({ onToggleSidebar }) {
+export default function TopNav({ onToggleSidebar, onSearch }) {
   const [showSearch, setShowSearch] = useState(false);
+  const [query, setQuery] = useState("");
+
+  // Handle the search execution
+  const handleSearch = (e) => {
+    if (e.key === "Enter" || e.type === "click") {
+      if (onSearch) {
+        onSearch(query);
+      }
+      // Optional: Close mobile search after searching
+      setShowSearch(false); 
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur">
@@ -16,14 +28,20 @@ export default function TopNav({ onToggleSidebar }) {
           <span className="text-white font-bold text-lg hidden sm:block">MarketSpace</span>
         </div>
 
-        {/* Center Search */}
+        {/* Center Search (Desktop) */}
         <div className="hidden md:flex flex-1 justify-center px-6">
           <div className="flex items-center bg-zinc-900/60 border border-white/10 rounded-xl px-4 h-11 w-full max-w-xl focus-within:border-green-500/50 transition">
             <input
               className="flex-1 bg-transparent text-white placeholder-white/40 outline-none text-sm"
               placeholder="Search products, sellers, spaces..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleSearch}
             />
-            <FaSearch className="text-white/50" />
+            <FaSearch 
+              className="text-white/50 cursor-pointer hover:text-green-500" 
+              onClick={handleSearch}
+            />
           </div>
         </div>
 
@@ -35,7 +53,7 @@ export default function TopNav({ onToggleSidebar }) {
           >
             <FaSearch size={18} />
           </button>
-          <button className="bg-zinc-900/60 border border-white/10 p-2 rounded-xl hover:border-green-500/50 transition">
+          <button className="bg-zinc-900/60 border border-white/10 p-2 rounded-xl hover:border-green-500/50 transition relative">
             <IoIosNotifications className="text-green-500 text-xl" />
           </button>
           <button className="bg-zinc-900/60 border border-white/10 p-2 rounded-xl hover:border-green-500/50 transition">
@@ -52,8 +70,14 @@ export default function TopNav({ onToggleSidebar }) {
               className="flex-1 bg-transparent text-white placeholder-white/40 outline-none text-sm"
               placeholder="Search..."
               autoFocus
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleSearch}
             />
-            <FaSearch className="text-white/50" />
+            <FaSearch 
+              className="text-white/50" 
+              onClick={handleSearch}
+            />
           </div>
         </div>
       )}

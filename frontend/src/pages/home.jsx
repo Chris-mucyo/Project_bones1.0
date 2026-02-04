@@ -5,6 +5,7 @@ import {
   IoMdAdd, IoMdRemove, IoIosSend, IoMdHappy
 } from "react-icons/io";
 import { RiShareForwardLine, RiBookmarkLine } from "react-icons/ri";
+import { useOutletContext } from "react-router-dom";
 
 const scrollbarHideStyles = `
   .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -53,16 +54,16 @@ export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [commentText, setCommentText] = useState("");
+  const { searchQuery } = useOutletContext();
 
-  // Filter products based on active category
-  const filteredProducts = activeCategory === "All" 
-    ? suggestedProducts 
-    : suggestedProducts.filter(p => p.category === activeCategory);
+  const filteredProducts = suggestedProducts.filter((product) => {
+    const matchesCategory = activeCategory === "All" || product.category === activeCategory;
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.uploader.toLowerCase().includes(searchQuery.toLowerCase());
 
-  useEffect(() => {
-    setQuantity(1);
-    setCommentText("");
-  }, [selectedProduct]);
+    return matchesCategory && matchesSearch;
+  });
+
 
   const toggleLike = (id) => {
     setLikedProducts(prev => ({ ...prev, [id]: !prev[id] }));
@@ -95,25 +96,27 @@ export default function Home() {
 
       {/* 2. MAIN GRID (Dynamic filtering) */}
       <div className="h-[calc(100vh-70px)] overflow-y-auto no-scrollbar pb-32">
-        <section className="px-8 pt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-5 gap-y-10">
-          {filteredProducts.map((product) => (
-            <div key={product.id} className="group cursor-pointer" onClick={() => setSelectedProduct(product)}>
-              <div className="relative aspect-video bg-zinc-900 rounded-xl overflow-hidden mb-3">
-                <div className="absolute inset-0 flex items-center justify-center bg-zinc-800 group-hover:bg-zinc-700 transition-colors">
-                  <span className="text-green-500 font-bold text-lg uppercase text-center px-4 tracking-tighter leading-tight">{product.name}</span>
+        <section className="px-8 pt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-10">
+          {
+            filteredProducts.map((product) => (
+              <div key={product.id} className="group cursor-pointer" onClick={() => setSelectedProduct(product)}>
+                <div className="relative aspect-video bg-zinc-900 rounded-xl overflow-hidden mb-3">
+                  <div className="absolute inset-0 flex items-center justify-center bg-zinc-800 group-hover:bg-zinc-700 transition-colors">
+                    <span className="text-green-500 font-bold text-lg uppercase text-center px-4 tracking-tighter leading-tight">{product.name}</span>
+                  </div>
+                  <div className="absolute bottom-2 right-2 bg-black/80 px-2 py-1 rounded text-[11px] font-bold">{product.price} RWF</div>
                 </div>
-                <div className="absolute bottom-2 right-2 bg-black/80 px-2 py-1 rounded text-[11px] font-bold">{product.price} RWF</div>
-              </div>
-              <div className="flex gap-3">
-                <div className="w-9 h-9 rounded-full bg-zinc-800 flex-shrink-0 flex items-center justify-center border border-white/10" />
-                <div className="flex-1">
-                  <h3 className="font-bold text-sm leading-tight mb-1 line-clamp-2">{product.name}</h3>
-                  <div className="text-zinc-400 text-xs">{product.uploader}</div>
-                  <div className="text-zinc-400 text-xs">{product.views} views</div>
+                <div className="flex gap-3">
+                  <div className="w-9 h-9 rounded-full bg-zinc-800 flex-shrink-0 flex items-center justify-center border border-white/10" />
+                  <div className="flex-1">
+                    <h3 className="font-bold text-sm leading-tight mb-1 line-clamp-2">{product.name}</h3>
+                    <div className="text-zinc-400 text-xs">{product.uploader}</div>
+                    <div className="text-zinc-400 text-xs">{product.views} views</div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          }
         </section>
       </div>
 
@@ -179,12 +182,15 @@ export default function Home() {
                 <div className="flex-1 flex items-center bg-zinc-900 rounded-full px-4 py-2 border border-white/5">
                   <input type="text" value={commentText} onChange={(e) => setCommentText(e.target.value)} placeholder="Add a comment..." className="bg-transparent text-sm flex-1 outline-none" />
                   {commentText && <button className="text-blue-500 text-sm font-bold ml-2">Post</button>}
-                  {!commentText && <IoMdHappy className="text-zinc-500 ml-2" size={20}/>}
+                  {!commentText && <IoMdHappy className="text-zinc-500 ml-2" size={20} />}
                 </div>
               </div>
               <div className="flex gap-2">
                 <button className="flex-[4] bg-green-500 text-black py-3.5 rounded-xl font-black flex items-center justify-center gap-2 active:scale-95 transition-all"><IoIosCart size={20} /> BUY NOW</button>
-                <button onClick={() => window.location.href = '/chat'} className="flex-1 bg-zinc-900 border border-white/10 text-white py-3.5 rounded-xl flex items-center justify-center"><IoIosChatbubbles size={24} /></button>
+                <button onClick={(e) =>{
+                  e.stopPropagation()
+                  window.location.href = `/chat?seller=${selectedProduct.uploader}&item=${selectedProduct.name}&price=${selectedProduct.price}`;
+                }} className="flex-1 bg-zinc-900 border border-white/10 text-white py-3.5 rounded-xl flex items-center justify-center"><IoIosChatbubbles size={24} /></button>
               </div>
             </div>
           </div>
