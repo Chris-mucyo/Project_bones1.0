@@ -5,65 +5,88 @@ import {
   IoMdAdd, IoMdRemove, IoIosSend, IoMdHappy
 } from "react-icons/io";
 import { RiShareForwardLine, RiBookmarkLine } from "react-icons/ri";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 
 const scrollbarHideStyles = `
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 `;
 
-// GENERATING 30 PRODUCTS
-const suggestedProducts = [
-  { id: 1, name: "Wireless Headphones", price: "99,000", category: "Electronics", uploader: "Alice", views: "2.3k", sales: "167", description: "Noise-canceling and 40h battery.", comments: [{ user: "John", text: "Amazing sound! 🎧", time: "2h" }] },
-  { id: 2, name: "Smart Watch Pro", price: "145,000", category: "Electronics", uploader: "TechGuru", views: "5.1k", sales: "230", description: "OLED display and heart tracking.", comments: [] },
-  { id: 3, name: "Mechanical Keyboard", price: "75,000", category: "Gaming", uploader: "Pixel", views: "1.2k", sales: "45", description: "RGB Blue switches.", comments: [] },
-  { id: 4, name: "Gaming Mouse", price: "45,000", category: "Gaming", uploader: "Pixel", views: "3.4k", sales: "890", description: "Ultra-lightweight 16k DPI.", comments: [] },
-  { id: 5, name: "Leather Wallet", price: "25,000", category: "Fashion", uploader: "StyleCo", views: "900", sales: "12", description: "Genuine cowhide leather.", comments: [] },
-  { id: 6, name: "Cotton Hoodie", price: "35,000", category: "Fashion", uploader: "Urban", views: "10k", sales: "1.2k", description: "Oversized fit, heavy cotton.", comments: [] },
-  { id: 7, name: "4K Monitor 27\"", price: "320,000", category: "Electronics", uploader: "DisplayMaster", views: "4.5k", sales: "67", description: "IPS panel, 144Hz refresh rate.", comments: [] },
-  { id: 8, name: "Coffee Maker", price: "120,000", category: "Home", uploader: "Barista", views: "2.1k", sales: "150", description: "Espresso and Latte modes.", comments: [] },
-  { id: 9, name: "Yoga Mat", price: "15,000", category: "Sports", uploader: "FitLife", views: "3.2k", sales: "400", description: "Non-slip eco-friendly rubber.", comments: [] },
-  { id: 10, name: "Dumbbells 10kg", price: "55,000", category: "Sports", uploader: "FitLife", views: "1.1k", sales: "88", description: "Solid iron with rubber grip.", comments: [] },
-  { id: 11, name: "Electric Kettle", price: "28,000", category: "Home", uploader: "KitchenHub", views: "4.3k", sales: "1.1k", description: "Fast boil stainless steel.", comments: [] },
-  { id: 12, name: "Canvas Backpack", price: "42,000", category: "Fashion", uploader: "Urban", views: "6.7k", sales: "210", description: "Waterproof laptop compartment.", comments: [] },
-  { id: 13, name: "Graphic T-Shirt", price: "18,000", category: "Fashion", uploader: "Designers", views: "15k", sales: "3k", description: "Premium print 100% cotton.", comments: [] },
-  { id: 14, name: "USB-C Hub", price: "38,000", category: "Electronics", uploader: "TechGuru", views: "2k", sales: "500", description: "7-in-1 with HDMI and SD.", comments: [] },
-  { id: 15, name: "Gaming Chair", price: "180,000", category: "Gaming", uploader: "Pixel", views: "8.9k", sales: "56", description: "Ergonomic leather with lumbar.", comments: [] },
-  { id: 16, name: "Smart Bulb RGB", price: "12,000", category: "Home", uploader: "KitchenHub", views: "1.2k", sales: "450", description: "App controlled, WiFi enabled.", comments: [] },
-  { id: 17, name: "Bluetooth Speaker", price: "65,000", category: "Electronics", uploader: "Alice", views: "4k", sales: "320", description: "Waterproof IPX7 rating.", comments: [] },
-  { id: 18, name: "Running Shoes", price: "85,000", category: "Sports", uploader: "Sprint", views: "12k", sales: "1k", description: "Breathable mesh for marathon.", comments: [] },
-  { id: 19, name: "Chef Knife", price: "52,000", category: "Home", uploader: "KitchenHub", views: "3.1k", sales: "89", description: "High carbon Japanese steel.", comments: [] },
-  { id: 20, name: "Denim Jacket", price: "48,000", category: "Fashion", uploader: "Urban", views: "5.5k", sales: "140", description: "Classic blue vintage wash.", comments: [] },
-  { id: 21, name: "Tablet Pro 11\"", price: "650,000", category: "Electronics", uploader: "TechGuru", views: "7.2k", sales: "34", description: "Pencil support and M2 chip.", comments: [] },
-  { id: 22, name: "Portable Charger", price: "22,000", category: "Electronics", uploader: "Alice", views: "9k", sales: "2.1k", description: "20,000mAh fast charging.", comments: [] },
-  { id: 23, name: "Sunglasses", price: "14,000", category: "Fashion", uploader: "StyleCo", views: "4.1k", sales: "600", description: "Polarized UV400 protection.", comments: [] },
-  { id: 24, name: "Desk Lamp", price: "26,000", category: "Home", uploader: "KitchenHub", views: "2.5k", sales: "110", description: "LED with wireless charging base.", comments: [] },
-  { id: 25, name: "Soccer Ball", price: "19,000", category: "Sports", uploader: "FitLife", views: "8k", sales: "1.5k", description: "FIFA standard size 5.", comments: [] },
-  { id: 26, name: "Webcam 1080p", price: "44,000", category: "Electronics", uploader: "TechGuru", views: "3.3k", sales: "90", description: "Auto-focus and dual mic.", comments: [] },
-  { id: 27, name: "Beanie Hat", price: "12,000", category: "Fashion", uploader: "Urban", views: "6k", sales: "800", description: "Warm knit winter wear.", comments: [] },
-  { id: 28, name: "Protein Shaker", price: "9,000", category: "Sports", uploader: "FitLife", views: "5.1k", sales: "2k", description: "BPA free with mixing ball.", comments: [] },
-  { id: 29, name: "Microwave Oven", price: "140,000", category: "Home", uploader: "Barista", views: "2.1k", sales: "40", description: "800W with digital timer.", comments: [] },
-  { id: 30, name: "Controller", price: "62,000", category: "Gaming", uploader: "Pixel", views: "14k", sales: "2.2k", description: "Wireless for PC/Console.", comments: [] },
-];
-
 const categories = ["All", "Electronics", "Fashion", "Gaming", "Home", "Sports"];
 
 export default function Home() {
+  // 1. REAL-TIME DATA STATE
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
   const [activeCategory, setActiveCategory] = useState("All");
   const [likedProducts, setLikedProducts] = useState({});
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [commentText, setCommentText] = useState("");
-  const { searchQuery } = useOutletContext();
+  
+  // Get search query and user from Layout context
+  const { searchQuery, user } = useOutletContext();
+  const navigate = useNavigate();
 
-  const filteredProducts = suggestedProducts.filter((product) => {
+  // 2. SIMULATE DATABASE FETCH
+  // In production, this useEffect will call your API (Supabase/Firebase)
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Simulating an API call with your original data
+        // Eventually replace this with: const { data } = await supabase.from('products').select('*')
+        const data = [
+          { id: 1, name: "Wireless Headphones", price: "99,000", category: "Electronics", uploader: "Alice", views: "2.3k", sales: "167", description: "Noise-canceling and 40h battery.", comments: [{ user: "John", text: "Amazing sound! 🎧", time: "2h" }] },
+          { id: 2, name: "Smart Watch Pro", price: "145,000", category: "Electronics", uploader: "TechGuru", views: "5.1k", sales: "230", description: "OLED display and heart tracking.", comments: [] },
+          { id: 3, name: "Mechanical Keyboard", price: "75,000", category: "Gaming", uploader: "Pixel", views: "1.2k", sales: "45", description: "RGB Blue switches.", comments: [] },
+          { id: 4, name: "Gaming Mouse", price: "45,000", category: "Gaming", uploader: "Pixel", views: "3.4k", sales: "890", description: "Ultra-lightweight 16k DPI.", comments: [] },
+          { id: 5, name: "Leather Wallet", price: "25,000", category: "Fashion", uploader: "StyleCo", views: "900", sales: "12", description: "Genuine cowhide leather.", comments: [] },
+          { id: 6, name: "Cotton Hoodie", price: "35,000", category: "Fashion", uploader: "Urban", views: "10k", sales: "1.2k", description: "Oversized fit, heavy cotton.", comments: [] },
+          { id: 7, name: "4K Monitor 27\"", price: "320,000", category: "Electronics", uploader: "DisplayMaster", views: "4.5k", sales: "67", description: "IPS panel, 144Hz refresh rate.", comments: [] },
+          { id: 8, name: "Coffee Maker", price: "120,000", category: "Home", uploader: "Barista", views: "2.1k", sales: "150", description: "Espresso and Latte modes.", comments: [] },
+          { id: 9, name: "Yoga Mat", price: "15,000", category: "Sports", uploader: "FitLife", views: "3.2k", sales: "400", description: "Non-slip eco-friendly rubber.", comments: [] },
+          { id: 10, name: "Dumbbells 10kg", price: "55,000", category: "Sports", uploader: "FitLife", views: "1.1k", sales: "88", description: "Solid iron with rubber grip.", comments: [] },
+          { id: 11, name: "Electric Kettle", price: "28,000", category: "Home", uploader: "KitchenHub", views: "4.3k", sales: "1.1k", description: "Fast boil stainless steel.", comments: [] },
+          { id: 12, name: "Canvas Backpack", price: "42,000", category: "Fashion", uploader: "Urban", views: "6.7k", sales: "210", description: "Waterproof laptop compartment.", comments: [] },
+          { id: 13, name: "Graphic T-Shirt", price: "18,000", category: "Fashion", uploader: "Designers", views: "15k", sales: "3k", description: "Premium print 100% cotton.", comments: [] },
+          { id: 14, name: "USB-C Hub", price: "38,000", category: "Electronics", uploader: "TechGuru", views: "2k", sales: "500", description: "7-in-1 with HDMI and SD.", comments: [] },
+          { id: 15, name: "Gaming Chair", price: "180,000", category: "Gaming", uploader: "Pixel", views: "8.9k", sales: "56", description: "Ergonomic leather with lumbar.", comments: [] },
+          { id: 16, name: "Smart Bulb RGB", price: "12,000", category: "Home", uploader: "KitchenHub", views: "1.2k", sales: "450", description: "App controlled, WiFi enabled.", comments: [] },
+          { id: 17, name: "Bluetooth Speaker", price: "65,000", category: "Electronics", uploader: "Alice", views: "4k", sales: "320", description: "Waterproof IPX7 rating.", comments: [] },
+          { id: 18, name: "Running Shoes", price: "85,000", category: "Sports", uploader: "Sprint", views: "12k", sales: "1k", description: "Breathable mesh for marathon.", comments: [] },
+          { id: 19, name: "Chef Knife", price: "52,000", category: "Home", uploader: "KitchenHub", views: "3.1k", sales: "89", description: "High carbon Japanese steel.", comments: [] },
+          { id: 20, name: "Denim Jacket", price: "48,000", category: "Fashion", uploader: "Urban", views: "5.5k", sales: "140", description: "Classic blue vintage wash.", comments: [] },
+          { id: 21, name: "Tablet Pro 11\"", price: "650,000", category: "Electronics", uploader: "TechGuru", views: "7.2k", sales: "34", description: "Pencil support and M2 chip.", comments: [] },
+          { id: 22, name: "Portable Charger", price: "22,000", category: "Electronics", uploader: "Alice", views: "9k", sales: "2.1k", description: "20,000mAh fast charging.", comments: [] },
+          { id: 23, name: "Sunglasses", price: "14,000", category: "Fashion", uploader: "StyleCo", views: "4.1k", sales: "600", description: "Polarized UV400 protection.", comments: [] },
+          { id: 24, name: "Desk Lamp", price: "26,000", category: "Home", uploader: "KitchenHub", views: "2.5k", sales: "110", description: "LED with wireless charging base.", comments: [] },
+          { id: 25, name: "Soccer Ball", price: "19,000", category: "Sports", uploader: "FitLife", views: "8k", sales: "1.5k", description: "FIFA standard size 5.", comments: [] },
+          { id: 26, name: "Webcam 1080p", price: "44,000", category: "Electronics", uploader: "TechGuru", views: "3.3k", sales: "90", description: "Auto-focus and dual mic.", comments: [] },
+          { id: 27, name: "Beanie Hat", price: "12,000", category: "Fashion", uploader: "Urban", views: "6k", sales: "800", description: "Warm knit winter wear.", comments: [] },
+          { id: 28, name: "Protein Shaker", price: "9,000", category: "Sports", uploader: "FitLife", views: "5.1k", sales: "2k", description: "BPA free with mixing ball.", comments: [] },
+          { id: 29, name: "Microwave Oven", price: "140,000", category: "Home", uploader: "Barista", views: "2.1k", sales: "40", description: "800W with digital timer.", comments: [] },
+          { id: 30, name: "Controller", price: "62,000", category: "Gaming", uploader: "Pixel", views: "14k", sales: "2.2k", description: "Wireless for PC/Console.", comments: [] },
+        ];
+        setProducts(data);
+      } catch (err) {
+        console.error("Failed to load products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // 3. FILTERING LOGIC
+  const filteredProducts = products.filter((product) => {
     const matchesCategory = activeCategory === "All" || product.category === activeCategory;
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.uploader.toLowerCase().includes(searchQuery.toLowerCase());
 
     return matchesCategory && matchesSearch;
   });
-
 
   const toggleLike = (id) => {
     setLikedProducts(prev => ({ ...prev, [id]: !prev[id] }));
@@ -94,11 +117,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 2. MAIN GRID (Dynamic filtering) */}
+      {/* 2. MAIN GRID (Dynamic loading state added) */}
       <div className="h-[calc(100vh-70px)] overflow-y-auto no-scrollbar pb-32">
-        <section className="px-8 pt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-10">
-          {
-            filteredProducts.map((product) => (
+        {loading ? (
+          <div className="h-96 flex items-center justify-center text-zinc-500 font-bold uppercase tracking-widest animate-pulse">
+            Loading Products...
+          </div>
+        ) : (
+          <section className="px-8 pt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-10">
+            {filteredProducts.map((product) => (
               <div key={product.id} className="group cursor-pointer" onClick={() => setSelectedProduct(product)}>
                 <div className="relative aspect-video bg-zinc-900 rounded-xl overflow-hidden mb-3">
                   <div className="absolute inset-0 flex items-center justify-center bg-zinc-800 group-hover:bg-zinc-700 transition-colors">
@@ -115,12 +142,12 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            ))
-          }
-        </section>
+            ))}
+          </section>
+        )}
       </div>
 
-      {/* 3. IG-STYLE DETAIL SIDENAV (Remains the same as previous) */}
+      {/* 3. IG-STYLE DETAIL SIDENAV */}
       <div className={`fixed top-0 right-0 h-full w-full md:w-[480px] bg-zinc-950 border-l border-white/10 z-[60] transition-transform duration-500 ease-in-out transform ${selectedProduct ? "translate-x-0" : "translate-x-full"}`}>
         {selectedProduct && (
           <div className="flex flex-col h-full relative">
@@ -187,10 +214,16 @@ export default function Home() {
               </div>
               <div className="flex gap-2">
                 <button className="flex-[4] bg-green-500 text-black py-3.5 rounded-xl font-black flex items-center justify-center gap-2 active:scale-95 transition-all"><IoIosCart size={20} /> BUY NOW</button>
-                <button onClick={(e) =>{
-                  e.stopPropagation()
-                  window.location.href = `/chat?seller=${selectedProduct.uploader}&item=${selectedProduct.name}&price=${selectedProduct.price}`;
-                }} className="flex-1 bg-zinc-900 border border-white/10 text-white py-3.5 rounded-xl flex items-center justify-center"><IoIosChatbubbles size={24} /></button>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Using navigate for clean routing instead of window.location.href
+                    navigate(`/chat?seller=${selectedProduct.uploader}&item=${selectedProduct.name}&price=${selectedProduct.price}`);
+                  }} 
+                  className="flex-1 bg-zinc-900 border border-white/10 text-white py-3.5 rounded-xl flex items-center justify-center"
+                >
+                  <IoIosChatbubbles size={24} />
+                </button>
               </div>
             </div>
           </div>
