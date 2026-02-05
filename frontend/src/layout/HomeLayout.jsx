@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import SideNav from "../components/SideNav";
+import SideNav from "../components/sideNav";
 import TopNav from "../components/TopNav";
 
 export default function HomeLayout() {

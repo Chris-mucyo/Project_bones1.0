@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FaBars, FaSearch } from "react-icons/fa";
 import { IoIosNotifications, IoIosCart } from "react-icons/io";
+import NotificationPopup from "./notification";
 
 export default function TopNav({ onToggleSidebar, onSearch }) {
   const [showSearch, setShowSearch] = useState(false);
@@ -53,9 +54,9 @@ export default function TopNav({ onToggleSidebar, onSearch }) {
           >
             <FaSearch size={18} />
           </button>
-          <button className="bg-zinc-900/60 border border-white/10 p-2 rounded-xl hover:border-green-500/50 transition relative">
-            <IoIosNotifications className="text-green-500 text-xl" />
-          </button>
+          
+            <NotificationPopup className="text-green-500 text-xl" />
+          
           <button className="bg-zinc-900/60 border border-white/10 p-2 rounded-xl hover:border-green-500/50 transition">
             <IoIosCart className="text-green-500 text-xl" />
           </button>

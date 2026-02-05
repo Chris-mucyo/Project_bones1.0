@@ -85,7 +85,7 @@ const Chat = () => {
   const currentMessages = messagesByChat[activeChatId] || [];
 
   return (
-    <div className="flex h-screen bg-zinc-950 text-white font-sans overflow-hidden">
+    <div className="flex flex-1 text-white font-sans overflow-hidden">
       
       {/* Sidebar */}
       <aside className="w-80 border-r border-zinc-800 flex flex-col bg-zinc-950">

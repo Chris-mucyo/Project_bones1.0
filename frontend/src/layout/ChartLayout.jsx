@@ -1,22 +1,21 @@
-// ChartLayout.jsx
-import HomeLayout from "./HomeLayout.jsx";
-import ChatSidebar from "../components/Chart.sideNav.jsx";
-import ChatPage from "../pages/chart.jsx";
-import { useState } from "react";
+import React, { useState } from 'react';
+import SideNav from '../components/sideNav';
+import Chat from '../pages/chart';
 
-export default function ChatWrapper() {
-  const [selectedContact, setSelectedContact] = useState(null);
+const ChatLayout = () => {
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   return (
-    <HomeLayout>
-      {/* Main content area inside HomeLayout */}
-      <div className="flex flex-1 overflow-hidden h-full">
-        {/* WhatsApp-style Chat Sidebar */}
-        <ChatSidebar onSelectContact={setSelectedContact} />
+    <div className="flex h-screen w-full bg-zinc-950 overflow-hidden">
+      {/* 1. Global Side Navigation */}
+      <SideNav collapsed={isCollapsed} />
 
-        {/* Chat content area */}
-        <ChatPage contact={selectedContact} />
+      {/* 2. The Chat Application */}
+      <div className="flex-1 flex overflow-hidden">
+        <Chat />
       </div>
-    </HomeLayout>
+    </div>
   );
-}
+};
+
+export default ChatLayout;

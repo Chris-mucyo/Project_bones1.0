@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { IoIosHome, IoIosCompass, IoIosHeart, IoIosChatbubbles, IoIosSettings } from "react-icons/io";
 import { IoLogInOutline, IoPersonCircleOutline } from "react-icons/io5";
 
 export default function SideNav({ collapsed }) {
   const [token, setToken] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     const syncToken = () => setToken(localStorage.getItem("token"));
@@ -21,53 +22,73 @@ export default function SideNav({ collapsed }) {
 
   return (
     <aside
-      className={`flex flex-col bg-zinc-950 transition-all duration-300
+      className={`flex flex-col bg-zinc-950 transition-all duration-300 border-r border-white/5 h-screen shrink-0
     ${collapsed ? "w-20" : "w-56"}`}
     >
+      {/* TOP NAVIGATION */}
       <nav className="flex-1 mt-6 space-y-1 px-3">
-        <NavItem icon={<IoIosHome />} label="Home" collapsed={collapsed} />
-        <NavItem icon={<IoIosCompass />} label="Explore" collapsed={collapsed} />
-        <NavItem icon={<IoIosHeart />} label="Wishlist" collapsed={collapsed} />
-        <NavItem icon={<IoIosChatbubbles />} label="Chat" collapsed={collapsed} />
+        <NavItem to="/" icon={<IoIosHome />} label="Home" collapsed={collapsed} active={location.pathname === "/"} />
+        <NavItem to="/explore" icon={<IoIosCompass />} label="Explore" collapsed={collapsed} active={location.pathname === "/explore"} />
+        <NavItem to="/wishlist" icon={<IoIosHeart />} label="Wishlist" collapsed={collapsed} active={location.pathname === "/wishlist"} />
+        <NavItem to="/chat" icon={<IoIosChatbubbles />} label="Chat" collapsed={collapsed} active={location.pathname === "/chat"} />
       </nav>
 
       <div className="border-t border-white/10 my-4" />
 
+      {/* BOTTOM SECTION */}
       <div className="space-y-1 mb-6 px-3">
         {isLoggedIn ? (
-          <NavItem icon={<IoPersonCircleOutline />} label="Profile" collapsed={collapsed} />
+          <NavItem to="/profile" icon={<IoPersonCircleOutline />} label="Profile" collapsed={collapsed} active={location.pathname === "/profile"} />
         ) : (
           <Link
             to="/auth/signin"
             className={`group flex items-center gap-4 px-3 py-2 rounded-xl
-              text-white hover:bg-zinc-900/60 transition
+              text-white hover:bg-zinc-900/60 transition mb-1
               ${collapsed ? "justify-center" : ""}`}
           >
-            <IoLogInOutline className="text-green-500 text-xl" />
-            {!collapsed && <span className="text-sm">Login</span>}
+            <div className="flex items-center justify-center w-6 shrink-0">
+              <IoLogInOutline className="text-green-500 text-xl" />
+            </div>
+            {!collapsed && <span className="text-sm font-medium">Login</span>}
           </Link>
         )}
+
+        {/* SETTINGS: Logic to stay white unless it's the active route */}
         <NavItem
-          icon={<IoIosSettings className="group-hover:rotate-180 transition-transform duration-300" />}
+          to="/settings"
+          icon={<IoIosSettings className="group-hover:rotate-180 transition-transform duration-500" />}
           label="Settings"
           collapsed={collapsed}
+          active={location.pathname === "/settings"}
+          isSettingsItem={true} 
         />
       </div>
     </aside>
   );
 }
 
-function NavItem({ icon, label, collapsed }) {
+function NavItem({ icon, label, collapsed, to, active, isSettingsItem }) {
   return (
-    <button
+    <Link
+      to={to}
       className={`group flex items-center gap-4 w-full px-3 py-2 rounded-xl
-        text-white/80 hover:text-white hover:bg-zinc-900/60
-        border border-transparent hover:border-white/10
-        transition
+        transition border border-transparent
+        ${active ? "bg-zinc-900 text-white border-white/5" : "text-white/80 hover:text-white hover:bg-zinc-900/60"}
         ${collapsed ? "justify-center" : ""}`}
     >
-      {icon && <span className="text-green-500 text-xl">{icon}</span>}
-      {!collapsed && <span className="text-sm font-medium">{label}</span>}
-    </button>
+      <div className="flex items-center justify-center w-6 shrink-0">
+        {icon && (
+          <span className={`text-xl transition-colors ${
+            active 
+              ? "text-green-400" // Green when selected
+              : (isSettingsItem ? "text-white" : "text-green-500") // White if it's settings at home, green for others
+          }`}>
+            {icon}
+          </span>
+        )}
+      </div>
+      
+      {!collapsed && <span className="text-sm font-medium whitespace-nowrap">{label}</span>}
+    </Link>
   );
 }
