@@ -13,6 +13,7 @@ import Explore from "./pages/explore.jsx";
 import ChatLayout from "./layout/ChartLayout.jsx";
 import Wishlist from "./pages/whishlist.jsx";
 import Settings from "./pages/settings.jsx";
+import SellerDashboard from "./pages/sellers/sellerDashboard.jsx"
 import './App.css';
 export default function App() {
   return (
@@ -38,6 +39,11 @@ export default function App() {
       <Routes>
         <Route element={<ChatLayout />}>
           <Route path="/chat" element={<Chat />} />
+        </Route>
+      </Routes>
+      <Routes>
+        <Route>
+          <Route path="/sellers" element={<SellerDashboard />} />
         </Route>
       </Routes>
 
