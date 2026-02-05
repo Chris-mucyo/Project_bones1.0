@@ -52,16 +52,6 @@ export default function SideNav({ collapsed }) {
             {!collapsed && <span className="text-sm font-medium">Login</span>}
           </Link>
         )}
-
-        {/* SETTINGS: Logic to stay white unless it's the active route */}
-        <NavItem
-          to="/settings"
-          icon={<IoIosSettings className="group-hover:rotate-180 transition-transform duration-500" />}
-          label="Settings"
-          collapsed={collapsed}
-          active={location.pathname === "/settings"}
-          isSettingsItem={true} 
-        />
       </div>
     </aside>
   );

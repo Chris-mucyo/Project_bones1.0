@@ -12,6 +12,7 @@ import Profile from "./pages/sellers/profile.jsx";
 import Explore from "./pages/explore.jsx";
 import ChatLayout from "./layout/ChartLayout.jsx";
 import Wishlist from "./pages/whishlist.jsx";
+import Settings from "./pages/settings.jsx";
 import './App.css';
 export default function App() {
   return (
@@ -24,7 +25,8 @@ export default function App() {
         </Route>
         <Route path="/auth/signin" element={<SignIn />} />
         <Route path="/auth/signup" element={<SignUp />} />
-        
+
+        <Route path="/Settings" element={<Settings />} />
       </Routes>
       <Routes>
         <Route path="/sellers/space" element={<MarketSpace />} />
@@ -38,6 +40,7 @@ export default function App() {
           <Route path="/chat" element={<Chat />} />
         </Route>
       </Routes>
+
     </BrowserRouter>
   );
 }
