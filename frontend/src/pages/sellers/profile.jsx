@@ -51,7 +51,7 @@ export default function Profile() {
   return (
     <div className="h-screen bg-zinc-950 text-white overflow-y-auto overflow-x-hidden">
       {/* Full-Screen Cover Photo */}
-      <div className="relative w-full h-[300px] md:h-[400px] bg-zinc-900">
+      <div className="relative w-full h-[300px] md:h-96 bg-zinc-900">
         <img
           src={seller.coverPhoto}
           alt="Cover"
