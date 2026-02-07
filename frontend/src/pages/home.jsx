@@ -4,7 +4,7 @@ import {
   IoIosStar, IoMdHeartEmpty, IoMdClose, IoIosFlame, IoIosFlash,
   IoMdAdd, IoMdRemove, IoIosSend, IoMdHappy
 } from "react-icons/io";
-import { RiShareForwardLine, RiBookmarkLine } from "react-icons/ri";
+import { RiShareForwardLine, RiBookmarkLine, RiBookmarkFill } from "react-icons/ri";
 import { useOutletContext, useNavigate } from "react-router-dom";
 
 const scrollbarHideStyles = `
@@ -21,9 +21,11 @@ export default function Home() {
   
   const [activeCategory, setActiveCategory] = useState("All");
   const [likedProducts, setLikedProducts] = useState({});
+  const [savedProducts, setSavedProducts] = useState({});
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [commentText, setCommentText] = useState("");
+  const [showShareMenu, setShowShareMenu] = useState(false);
   
   // Get search query and user from Layout context
   const { searchQuery, user } = useOutletContext();
@@ -79,6 +81,14 @@ export default function Home() {
     fetchData();
   }, []);
 
+  // Load liked and saved products from localStorage on mount
+  useEffect(() => {
+    const likes = JSON.parse(localStorage.getItem('likedProducts') || '{}');
+    const saves = JSON.parse(localStorage.getItem('savedProducts') || '{}');
+    setLikedProducts(likes);
+    setSavedProducts(saves);
+  }, []);
+
   // 3. FILTERING LOGIC
   const filteredProducts = products.filter((product) => {
     const matchesCategory = activeCategory === "All" || product.category === activeCategory;
@@ -89,7 +99,89 @@ export default function Home() {
   });
 
   const toggleLike = (id) => {
-    setLikedProducts(prev => ({ ...prev, [id]: !prev[id] }));
+    setLikedProducts(prev => {
+      const newLikes = { ...prev, [id]: !prev[id] };
+      localStorage.setItem('likedProducts', JSON.stringify(newLikes));
+      return newLikes;
+    });
+  };
+
+  const toggleSave = (product) => {
+    setSavedProducts(prev => {
+      const newSaves = { ...prev, [product.id]: !prev[product.id] };
+      localStorage.setItem('savedProducts', JSON.stringify(newSaves));
+      
+      // Save full product details to wishlist
+      const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+      
+      if (!prev[product.id]) {
+        // Check if product already exists in wishlist to prevent duplicates
+        const existingIndex = wishlist.findIndex(item => item.id === product.id);
+        
+        if (existingIndex === -1) {
+          // Add to wishlist only if it doesn't exist
+          const productData = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            category: product.category,
+            uploader: product.uploader,
+            description: product.description,
+            savedAt: new Date().toISOString()
+          };
+          wishlist.push(productData);
+          localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        }
+      } else {
+        // Remove from wishlist
+        const updatedWishlist = wishlist.filter(item => item.id !== product.id);
+        localStorage.setItem('wishlist', JSON.stringify(updatedWishlist));
+      }
+      
+      return newSaves;
+    });
+  };
+
+  const handleShare = async (product, platform) => {
+    const shareUrl = `${window.location.origin}/#/product/${product.id}`;
+    const shareText = `Check out ${product.name} - ${product.price} RWF on ShopHub!`;
+    
+    const shareLinks = {
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
+      copy: shareUrl
+    };
+
+    if (platform === 'copy') {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        alert('Link copied to clipboard!');
+      } catch (err) {
+        console.error('Failed to copy:', err);
+        const textArea = document.createElement('textarea');
+        textArea.value = shareUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Link copied to clipboard!');
+      }
+    } else if (platform === 'native' && navigator.share) {
+      try {
+        await navigator.share({
+          title: product.name,
+          text: shareText,
+          url: shareUrl
+        });
+      } catch (err) {
+        console.log('Share cancelled or failed:', err);
+      }
+    } else {
+      window.open(shareLinks[platform], '_blank', 'width=600,height=400');
+    }
+    
+    setShowShareMenu(false);
   };
 
   const parsePrice = (priceStr) => parseInt(priceStr.replace(/,/g, ""), 10);
@@ -168,11 +260,55 @@ export default function Home() {
               <div className="p-4">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-4">
-                    <button onClick={() => toggleLike(selectedProduct.id)}>{likedProducts[selectedProduct.id] ? <IoIosHeart className="text-red-500 text-3xl" /> : <IoMdHeartEmpty className="text-3xl" />}</button>
+                    <button onClick={() => toggleLike(selectedProduct.id)}>
+                      {likedProducts[selectedProduct.id] ? <IoIosHeart className="text-red-500 text-3xl" /> : <IoMdHeartEmpty className="text-3xl" />}
+                    </button>
                     <IoIosChatbubbles size={28} />
-                    <RiShareForwardLine size={28} />
+                    <div className="relative">
+                      <button onClick={() => setShowShareMenu(!showShareMenu)}>
+                        <RiShareForwardLine size={28} />
+                      </button>
+                      {showShareMenu && (
+                        <div className="absolute left-0 mt-2 bg-zinc-900 border border-white/10 rounded-xl shadow-xl overflow-hidden min-w-[160px] z-20">
+                          {navigator.share && (
+                            <button
+                              onClick={() => handleShare(selectedProduct, 'native')}
+                              className="w-full px-4 py-2.5 text-left text-white text-sm hover:bg-zinc-800 transition-colors"
+                            >
+                              Share...
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleShare(selectedProduct, 'facebook')}
+                            className="w-full px-4 py-2.5 text-left text-white text-sm hover:bg-zinc-800 transition-colors"
+                          >
+                            Facebook
+                          </button>
+                          <button
+                            onClick={() => handleShare(selectedProduct, 'twitter')}
+                            className="w-full px-4 py-2.5 text-left text-white text-sm hover:bg-zinc-800 transition-colors"
+                          >
+                            Twitter
+                          </button>
+                          <button
+                            onClick={() => handleShare(selectedProduct, 'whatsapp')}
+                            className="w-full px-4 py-2.5 text-left text-white text-sm hover:bg-zinc-800 transition-colors"
+                          >
+                            WhatsApp
+                          </button>
+                          <button
+                            onClick={() => handleShare(selectedProduct, 'copy')}
+                            className="w-full px-4 py-2.5 text-left text-white text-sm hover:bg-zinc-800 transition-colors border-t border-white/10"
+                          >
+                            Copy Link
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <RiBookmarkLine size={26} />
+                  <button onClick={() => toggleSave(selectedProduct)}>
+                    {savedProducts[selectedProduct.id] ? <RiBookmarkFill className="text-green-500" size={26} /> : <RiBookmarkLine size={26} />}
+                  </button>
                 </div>
                 <div className="bg-zinc-900/50 rounded-2xl p-4 border border-white/5 mb-6">
                   <div className="flex justify-between items-center mb-4">

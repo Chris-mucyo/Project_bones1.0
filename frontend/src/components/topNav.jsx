@@ -25,7 +25,7 @@ export default function TopNav({ onToggleSidebar, onSearch }) {
           <button onClick={onToggleSidebar} className="text-white hover:text-green-500 transition">
             <FaBars size={22} />
           </button>
-          <span className="text-white font-bold text-lg hidden sm:block tracking-tight">MarketSpace</span>
+          <span className="text-white font-bold text-lg hidden sm:block tracking-tight">ShopHub</span>
         </div>
 
         {/* Center Search (Desktop) */}
