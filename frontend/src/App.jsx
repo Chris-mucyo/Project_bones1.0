@@ -9,6 +9,7 @@ import ChatLayout from "./layout/ChartLayout.jsx";
 import Wishlist from "./pages/whishlist.jsx";
 import Settings from "./pages/settings.jsx";
 import SellerPortal from "./seller/SellerPortal";
+import Profile from "./pages/profile.jsx";
 
 import './App.css';
 export default function App() {
@@ -33,6 +34,7 @@ export default function App() {
       <Routes>
         <Route>
           <Route path="/sellers" element={<SellerPortal />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
 
