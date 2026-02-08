@@ -31,6 +31,12 @@ export default function Home() {
   const { searchQuery, user } = useOutletContext();
   const navigate = useNavigate();
 
+  // Navigate to profile handler
+  const handleProfileClick = (e, uploader) => {
+    e.stopPropagation(); // Prevent card click from opening detail view
+    navigate(`/profile/${uploader}`); // Navigate to specific user's profile
+  };
+
   // 2. SIMULATE DATABASE FETCH
   // In production, this useEffect will call your API (Supabase/Firebase)
   useEffect(() => {
@@ -226,10 +232,18 @@ export default function Home() {
                   <div className="absolute bottom-2 right-2 bg-black/80 px-2 py-1 rounded text-[11px] font-bold">{product.price} RWF</div>
                 </div>
                 <div className="flex gap-3">
-                  <div className="w-9 h-9 rounded-full bg-zinc-800 flex-shrink-0 flex items-center justify-center border border-white/10" />
+                  <div 
+                    onClick={(e) => handleProfileClick(e, product.uploader)}
+                    className="w-9 h-9 rounded-full bg-zinc-800 flex-shrink-0 flex items-center justify-center border border-white/10 hover:border-white/30 transition-colors cursor-pointer" 
+                  />
                   <div className="flex-1">
                     <h3 className="font-bold text-sm leading-tight mb-1 line-clamp-2">{product.name}</h3>
-                    <div className="text-zinc-400 text-xs">{product.uploader}</div>
+                    <div 
+                      onClick={(e) => handleProfileClick(e, product.uploader)}
+                      className="text-zinc-400 text-xs hover:text-white transition-colors cursor-pointer"
+                    >
+                      {product.uploader}
+                    </div>
                     <div className="text-zinc-400 text-xs">{product.views} views</div>
                   </div>
                 </div>
@@ -244,7 +258,13 @@ export default function Home() {
         {selectedProduct && (
           <div className="flex flex-col h-full relative">
             <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between sticky top-0 bg-zinc-950 z-10">
-              <div className="flex items-center gap-3">
+              <div 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/profile/${selectedProduct.uploader}`);
+                }}
+                className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+              >
                 <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 to-fuchsia-600 p-[1.5px]">
                   <div className="w-full h-full rounded-full bg-black flex items-center justify-center"><span className="text-[10px] font-bold">{selectedProduct.uploader[0]}</span></div>
                 </div>

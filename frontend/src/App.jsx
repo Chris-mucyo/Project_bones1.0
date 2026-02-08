@@ -8,8 +8,8 @@ import Explore from "./pages/explore.jsx";
 import ChatLayout from "./layout/ChartLayout.jsx";
 import Wishlist from "./pages/whishlist.jsx";
 import Settings from "./pages/settings.jsx";
-import SellerPortal from "./seller/SellerPortal";
 import Profile from "./pages/profile.jsx";
+import AnalyticsView from "./components/sellers/AnalyticsView.jsx";
 
 import './App.css';
 export default function App() {
@@ -33,8 +33,8 @@ export default function App() {
       </Routes>
       <Routes>
         <Route>
-          <Route path="/sellers" element={<SellerPortal />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/sellers/analytics" element={<AnalyticsView />} />
+          <Route path="/profile/:username" element={<Profile />} />
         </Route>
       </Routes>
 
